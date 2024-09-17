@@ -1,0 +1,168 @@
+// Criando as coleções caso ainda não existam
+db.createCollection("F02_CIDADE")
+db.createCollection("F03_TECNICO")
+db.createCollection("F04_TIME")
+db.createCollection("F05_JOGADOR")
+db.createCollection("F06_PATROCINADOR")
+db.createCollection("F07_ARBITRO")
+db.createCollection("F08_CAMPEONATO")
+db.createCollection("F09_ESTADIO")
+db.createCollection("F10_EMISSORA")
+db.createCollection("F11_PARTIDA")
+db.createCollection("F12_PATROCINA")
+db.createCollection("F13_APITA")
+db.createCollection("F15_GOLS_CARTOES")
+
+// Lista de comandos de validação
+var commands = [
+    {
+        collMod: "F02_CIDADE",
+        validator: { $and: [
+            {"_id.CIDADE": {$ne: null}},
+            {"_id.SIGLAC": {$ne: null}}
+        ] },
+        validationAction: "error"
+    },
+    {
+        collMod: "F03_TECNICO",
+        validator: { $and: [
+            {"_id.CPFT": {$ne: null}},
+            {"TECNICO": {$ne: null}}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F04_TIME",
+        validator: { $and: [
+            {"_id.TTIME": {$ne: null}},
+            {"CIDADE": {$ne: null}},
+            {"ESTADO": {$ne: null}}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F05_JOGADOR",
+        validator: { $and: [
+            {"_id.CPFJ": {$ne: null}},
+            {"JOGADOR": {$ne: null}},
+            {"POSICAO": {
+  	            $in: ["GOLEIRO", "ZAGUEIRO", "LATERAL", "MEIO-CAMPO", "ATACANTE"]
+	        }}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F06_PATROCINADOR",
+        validator: { $and: [
+            {"_id.IDPAT": {$ne: null}},
+            {"PATROCINADOR": {$ne: null}}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F07_ARBITRO",
+        validator: { $and: [
+            {"_id.CPFA": {$ne: null}},
+            {"ARBITRO": {$ne: null}}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F08_CAMPEONATO",
+        validator: { $and: [
+            {"_id.IDCAMPEONATO": {$ne: null}},
+            {"CAMPEONATO": {$ne: null}},
+            {"ANO": {$ne: null}}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F09_ESTADIO",
+        validator: { $and: [
+            {"_id.IDESTADIO": {$ne: null}},
+            {"CIDADE": {$ne: null}},
+            {"ESTADO": {$ne: null}},
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F10_EMISSORA",
+        validator: { $and: [
+            {"_id.IDEMISSORA": {$ne: null}},
+            {"PARTIDAS_TRANSMITIDAS": {$ne: null}},
+            {"TIPO": {$ne: null}},
+            {$or: [
+                {
+                    $and: [
+                        {"TIPO": {$eq: "R"}},
+                        {"FREQUENCIA": {$ne: null}}
+                    ]
+                },
+                {
+                    $and: [
+                        {"TIPO": {$eq: "T"}},
+                        {"CANAL": {$ne: null}}
+                    ]
+                }
+            ]}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F11_PARTIDA",
+        validator: { $and: [
+            {"_id.IDPARTIDA": {$ne: null}},
+            {"TTIME1": {$ne: null}},
+            {"TTIME2": {$ne: null}},
+            {"DATAHORA": {$ne: null}},
+            {"IDCAMPEONATOP": {$ne: null}},
+            {"IDESTADIOP": {$ne: null}},
+            {"GOLS_TIME1": {$ne: null}},
+            {"GOLS_TIME2": {$ne: null}}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F12_PATROCINA",
+        validator: { $and: [
+            {"_id.IDPAT": {$ne: null}},
+            {"_id.TTIME": {$ne: null}}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F13_APITA",
+        validator: { $and: [
+            {"_id.CPFA": {$ne: null}},
+            {"_id.IDPARTIDA": {$ne: null}},
+            {"FUNCAO": {$ne: null}},
+            {"FUNCAO": {
+                $in: ["PRINCIPAL", "BANDEIRINHA", "RESERVA"]
+            }}
+        ]},
+        validationAction: "error"
+    },
+    {
+        collMod: "F15_GOLS_CARTOES",
+        validator: { $and: [
+            {"_id.CPFJ": {$ne: null}},
+            {"_id.IDPARTIDA": {$ne: null}},
+            {"AMARELO": {$ne: null}},
+            {"VERMELHO": {$ne: null}},
+            {"GOLS": {$ne: null}},
+            {"GOLS_CONTRA": {$ne: null}},
+            {"AMARELO": {
+                $in: ["0", "1"]
+            }},
+            {"VERMELHO": {
+                $in: ["0", "1"]
+            }}
+        ]},
+        validationAction: "error"
+    }
+];
+
+// Executando todos os comandos de validação acima
+commands.forEach(function(command) {
+    db.runCommand(command);
+});
